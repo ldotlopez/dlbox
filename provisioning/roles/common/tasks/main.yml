@@ -9,5 +9,8 @@
 - name: user | Setup user
   user: name={{ dlbox_user }} home={{ dlbox_prefix }} shell=/bin/false groups= createhome=no
 
-- name: paths | Setup paths
-  file: path={{ dlbox_prefix }} state=directory owner={{ dlbox_user }} group={{ dlbox_group }}
+- name: paths | Setup paths for dlbox user
+  file: path={{ item.path }} state={{ item.state }} owner={{ dlbox_user }} group={{ dlbox_group }}
+  with_items:
+  - { path: "{{ dlbox_prefix}}", state: "directory" }
+  - { path: "{{ dlbox_storage}}", state: "directory" }

@@ -1,3 +1,9 @@
+- name: fake storage | Fake storage folders
+  file: path={{ dlbox_storage }}/transmission/{{ item }} state=directory mode=0755 owner={{ dlbox_user }} group={{ dlbox_group }} force=yes
+  with_items:
+  - downloads
+  - partial
+
 - name: packages | Install transmission packages
   apt: pkg={{ item }} state=present
   with_items:
@@ -7,22 +13,26 @@
 - name: stop service | Stop transmission service
   service: name=transmission-daemon state=stopped
 
-- name: paths | Setup transmission paths
-  file: path={{ dlbox_prefix }}/{{item}} state=directory mode=0755 owner={{ dlbox_user }} group={{ dlbox_group }} force=yes
+- name: paths | Create transmission paths
+  file: path={{ item }} state=directory mode=0755 owner={{ dlbox_user }} group={{ dlbox_group }} force=yes 
   with_items:
-  - transmission
-  - transmission/info
-  - transmission/downloads
-  - transmission/partial
+  - "{{ dlbox_prefix }}/transmission"
+  - "{{ dlbox_prefix }}/transmission/info"
+
+- name: links | Link transmission dirs
+  file: src={{ item.src }} path={{ item.path }} state=link force=yes
+  with_items:
+  - { src: "{{ dlbox_storage }}/transmission/downloads", path: "{{ transmission_download_dir }}" }
+  - { src: "{{ dlbox_storage }}/transmission/partial", path: "{{ transmission_incomplete_dir }}" }
 
 - name: templates | Install templates
   template: src={{ item.src }} dest={{ item.dst }}
   with_items:
   - { src: "transmission-daemon.default.j2", dst: "/etc/default/transmission-daemon" }
-  - { src: "settings.json.j2", dst: "{{ dlbox_prefix }}/transmission/info/settings.json" }
+  - { src: "settings.json.j2", dst: "{{ transmission_info_dir }}/settings.json" }
 
 - name: permissions | Fix permissions
-  file: path={{ dlbox_prefix }}/transmission/info/settings.json owner={{ dlbox_user }} group={{ dlbox_group }} mode=0644
+  file: path={{ transmission_info_dir }}/settings.json owner={{ dlbox_user }} group={{ dlbox_group }} mode=0600
 
 - name: start service | Start transmission service
   service: name=transmission-daemon state=started

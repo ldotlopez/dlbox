@@ -1,1 +1,5 @@
 transmission_port: 9091
+transmission_dir: "{{ dlbox_prefix }}/transmission"
+transmission_info_dir: "{{ transmission_dir }}/info"
+transmission_download_dir: "{{ transmission_dir }}/downloads"
+transmission_incomplete_dir: "{{ transmission_dir }}/partial"

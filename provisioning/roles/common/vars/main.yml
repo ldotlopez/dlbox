@@ -1,3 +1,4 @@
 dlbox_user: dlbox
 dlbox_group: dlbox
 dlbox_prefix: /opt/dlbox
+dlbox_storage: /mnt/dlbox-storage

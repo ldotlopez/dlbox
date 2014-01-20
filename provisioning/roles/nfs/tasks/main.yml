@@ -1,0 +1,16 @@
+- name: packages | Install nfs packages
+  apt: pkg={{ item }} state=present
+  with_items:
+  - nfs-kernel-server
+
+- name: stop service | Stop transmission service
+  service: name=nfs-kernel-server state=stopped
+
+- name: templates | Install templates
+  template: src={{ item.src }} dest={{ item.dst }}
+  with_items:
+  - { src: "exports.j2", dst: "/etc/exports" }
+
+- name: start service | Start transmission service
+  service: name=nfs-kernel-server state=started
+
