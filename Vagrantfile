@@ -6,10 +6,8 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     config.vm.box_download_checksum = 'aed63c2b21d9e8b25e8c744285c11fc738148dd8'
 	config.vm.box_download_checksum_type = 'sha1'
 
-	config.vm.network "forwarded_port", guest: 9091, host: 9091
-
 	config.vm.hostname = 'dlbox'
-    # config.vm.provision "shell", inline: "apt-get update -qq && apt-get install python -yqq"
+    config.vm.provision "shell", inline: "apt-get update -qq && apt-get install python -yqq"
 
 	config.vm.provision "ansible" do |ansible|
 	    ansible.sudo = true
