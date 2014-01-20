@@ -10,5 +10,7 @@
   #    - git-core
   roles:
     - common
+    - btsync
     - transmission
     - nfs
+    - ftp-server

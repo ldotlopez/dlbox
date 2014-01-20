@@ -1,0 +1,41 @@
+- command: /usr/bin/test -x /etc/init.d/btsync
+  register: has_btsync_service
+  ignore_errors: True
+
+- name: stop service
+  service: name=btsync state=stopped
+  when: has_btsync_service|success
+
+- name: fetch | Fetch btsync
+  get_url: url={{ btsync_url }} dest=/tmp/btsync-stable.tar.gz
+
+- name: path | Create btsync path
+  file: path={{ btsync_dir }} state=directory
+
+- name: unpack | Unpack btsync
+  command: tar zxvf /tmp/btsync-stable.tar.gz chdir={{ btsync_dir }}
+
+- name: btsync permissions | Fix permissions
+  command: chown -R 0:0 "{{ btsync_dir }}"
+
+- name: default | Setup default
+  template: src={{ item.src }} dest={{ item.dest }}
+  with_items:
+  - { src: btsync.default.j2, dest: /etc/default/btsync }
+  - { src: config.json.j2, dest: "{{ btsync_dir }}/config.json" }
+  - { src: btsync.init.d.j2, dest: /etc/init.d/btsync }
+
+- name: template permissions | Fix template permission
+  file: path={{ btsync_dir }}/config.json owner={{ dlbox_user }} group={{ dlbox_group }}  mode=0600
+
+- name: template permissions | Fix template permission
+  file: path=/etc/init.d/btsync mode=0755
+
+- name: old state directory | Delete old state directory
+  file: path={{ btsync_dir }}/.sync owner={{ dlbox_user }} group={{ dlbox_group }} state=absent
+
+- name: state directory
+  file: path={{ btsync_dir }}/sync owner={{ dlbox_user }} group={{ dlbox_group }} state=directory mode=0700 recurse=yes
+
+- name: start service
+  service: name=btsync state=stopped enabled=no

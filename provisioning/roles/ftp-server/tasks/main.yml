@@ -1,0 +1,20 @@
+- name: install packages | Install ftp-server packages
+  apt: pkg={{ item }} state=present
+  with_items:
+  - xinetd
+  - vsftpd
+
+- name: stop services | Stop services
+  service: name={{ item }} state=stopped
+  with_items:
+  - vsftpd
+  - xinetd
+
+- name: setup vsftpd | Setup vsftpd
+  copy: src=vsftpd.conf dest=/etc/vsftpd.conf
+
+- name: setup xinetd | Setup xinetd
+  copy: src=ftp.xinetd dest=/etc/xinetd.d/ftp
+
+- name: configure service | Configure xinetd service
+  service: name=xinetd state=started enabled=no

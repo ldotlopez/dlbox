@@ -35,5 +35,5 @@
   file: path={{ transmission_info_dir }}/settings.json owner={{ dlbox_user }} group={{ dlbox_group }} mode=0600
 
 - name: start service | Start transmission service
-  service: name=transmission-daemon state=started
+  service: name=transmission-daemon state=stopped enabled=no
 
