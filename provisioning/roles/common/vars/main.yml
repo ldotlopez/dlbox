@@ -1,0 +1,3 @@
+dlbox_user: dlbox
+dlbox_group: dlbox
+dlbox_prefix: /opt/dlbox

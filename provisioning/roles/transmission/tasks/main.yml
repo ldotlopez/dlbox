@@ -1,0 +1,29 @@
+- name: packages | Install transmission packages
+  apt: pkg={{ item }} state=present
+  with_items:
+  - transmission-daemon
+  - transmission-cli
+
+- name: stop service | Stop transmission service
+  service: name=transmission-daemon state=stopped
+
+- name: paths | Setup transmission paths
+  file: path={{ dlbox_prefix }}/{{item}} state=directory mode=0755 owner={{ dlbox_user }} group={{ dlbox_group }} force=yes
+  with_items:
+  - transmission
+  - transmission/info
+  - transmission/downloads
+  - transmission/partial
+
+- name: templates | Install templates
+  template: src={{ item.src }} dest={{ item.dst }}
+  with_items:
+  - { src: "transmission-daemon.default.j2", dst: "/etc/default/transmission-daemon" }
+  - { src: "settings.json.j2", dst: "{{ dlbox_prefix }}/transmission/info/settings.json" }
+
+- name: permissions | Fix permissions
+  file: path={{ dlbox_prefix }}/transmission/info/settings.json owner={{ dlbox_user }} group={{ dlbox_group }} mode=0644
+
+- name: start service | Start transmission service
+  service: name=transmission-daemon state=started
+

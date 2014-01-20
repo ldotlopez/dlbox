@@ -1,0 +1,13 @@
+- name: packages | Install common packages
+  apt: pkg={{ item }} state=present
+  with_items:
+  - pmount
+  - vim
+  - avahi-daemon
+  - libnss-mdns
+
+- name: user | Setup user
+  user: name={{ dlbox_user }} home={{ dlbox_prefix }} shell=/bin/false groups= createhome=no
+
+- name: paths | Setup paths
+  file: path={{ dlbox_prefix }} state=directory owner={{ dlbox_user }} group={{ dlbox_group }}
