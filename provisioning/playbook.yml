@@ -1,16 +1,8 @@
 - hosts: all
-  #tasks:
-  #  - name: Essential packages
-  #    apt: pkg={{ item }} state=present
-  #    with_items:
-  #    - pmount
-  #    - vim
-  #    - avahi-daemon
-  #    - libnss-mdns
-  #    - git-core
   roles:
     - common
-    - btsync
+    # - raspbian
     - transmission
     - nfs
     - ftp-server
+    - btsync

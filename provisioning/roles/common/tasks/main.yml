@@ -14,3 +14,8 @@
   with_items:
   - { path: "{{ dlbox_prefix}}", state: "directory" }
   - { path: "{{ dlbox_storage}}", state: "directory" }
+
+- name: udev rules
+  copy: src=99-auto-mount-disks.rules dest=/etc/udev/rules.d/99-auto-mount-disks.rules
+  notify:
+    - reload udev rules
