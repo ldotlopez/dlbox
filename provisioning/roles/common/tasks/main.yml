@@ -1,6 +1,7 @@
 - name: packages | Install common packages
   apt: pkg={{ item }} state=present
   with_items:
+  - udev
   - pmount
   - vim
   - avahi-daemon
