@@ -1,0 +1,8 @@
+#!/bin/bash
+
+if [ "$1" = "plug" ]; then
+	service xinetd start
+fi
+if [ "$1" = "unplug" ]; then
+	service xinetd stop
+fi

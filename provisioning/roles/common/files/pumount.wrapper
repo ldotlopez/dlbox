@@ -1,0 +1,39 @@
+#!/bin/bash
+
+echo "$@" > /var/log/aaaa
+env >> /var/log/aaaa
+
+source "/etc/dlbox.conf" 2>/dev/null
+if [ $? -ne 0 ]; then
+	echo "Unable to read config file" >&2
+	exit 255
+fi
+
+# Start variables
+STORAGE_DIR="$DLBOX_PREFIX/storage"
+STORAGE_GUARD="dlbox-storage.txt"
+SCRIPTS_DIR="$DLBOX_PREFIX/storage-scripts.d"
+# End variables
+
+# Try pmount
+/usr/bin/pumount $@
+E=$?
+if [ $E -ne 0 ]; then
+	exit $E
+fi
+
+# Check if storage link is dangling
+if [ ! -L "$STORAGE_DIR" ]; then
+	echo "$STORAGE_DIR is not a link, aborting" >&2
+	exit 1
+fi
+
+if [ -e "$STORAGE_GUARD" ]; then
+	exit 0
+fi
+
+
+# Stop everything else
+run-parts -a "unplug" "$SCRIPTS_DIR"
+rm "$STORAGE_DIR"
+

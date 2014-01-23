@@ -1,8 +1,8 @@
-- name: fake storage | Fake storage folders
-  file: path={{ dlbox_storage }}/transmission/{{ item }} state=directory mode=0755 owner={{ dlbox_user }} group={{ dlbox_group }} force=yes
-  with_items:
-  - downloads
-  - partial
+#- name: fake storage | Fake storage folders
+#  file: path={{ dlbox_storage }}/transmission/{{ item }} state=directory mode=0755 owner={{ dlbox_user }} group={{ dlbox_group }} force=yes
+#  with_items:
+#  - downloads
+#  - partial
 
 - name: packages | Install transmission packages
   apt: pkg={{ item }} state=present
@@ -12,6 +12,8 @@
 
 - name: stop service | Stop transmission service
   service: name=transmission-daemon state=stopped
+
+- copy: src=50_transmission dest={{ dlbox_storage_scripts }}/50_transmission
 
 - name: paths | Create transmission paths
   file: path={{ item }} state=directory mode=0755 owner={{ dlbox_user }} group={{ dlbox_group }} force=yes 

@@ -1,0 +1,21 @@
+#!/bin/bash
+
+source /etc/dlbox.conf 2>/dev/null
+if [ $? -ne 0 ]; then
+	echo "Can't read config file" >&2
+	exit 255
+fi
+
+if [ "$1" = "plug" ]; then
+	for d in \
+		"$DLBOX_STORAGE/transmission/downloads" \
+		"$DLBOX_STORAGE/transmission/partial"
+	do
+		mkdir -p "$d"
+		chown -R "$DLBOX_USER":"$DLBOX_GROUP" "$d"
+	done
+	service transmission-daemon start
+fi
+if [ "$1" = "unplug" ]; then
+	service transmission-daemon stop
+fi

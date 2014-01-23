@@ -1,20 +1,40 @@
 - name: packages | Install common packages
   apt: pkg={{ item }} state=present
   with_items:
+  - linux-image-3.10-3-rpi
   - udev
   - pmount
   - vim
   - avahi-daemon
   - libnss-mdns
+  - sudo
+
+# copy new kernel to /boot/kernel
+# add initrd option to cmdline.txt
+
+#- lineinfile: dest=/boot/cmdline.txt line='^(.+)\binitrd=.+?\b(.+)$' regexp='\1 \2' backrefs=yes backup=yes state=present
+#
+#- lineinfile: dest=/boot/cmdline.txt line='^(.+)$' regexp='\1 initrd=initrd.img-3.10-3-rpi' backrefs=yes backup=yes state=present
 
 - name: user | Setup user
-  user: name={{ dlbox_user }} home={{ dlbox_prefix }} shell=/bin/false groups= createhome=no
+  user: name={{ dlbox_user }} home={{ dlbox_prefix }} shell=/bin/bash groups={{ dlbox_group }},plugdev password={{ dlbox_password }} createhome=no update_password=always
+
+- name: templates
+  template: src={{ item.src }} dest={{ item.dest }} validate="{{ item.validate }}" mode={{ item.mode }}
+  with_items:
+  - { src: dlbox.conf.j2, dest: /etc/dlbox.conf, validate: "/bin/true %s", mode: "0644" }
+  - { src: dlbox.sudoers.j2, dest: /etc/sudoers.d/dlbox, validate: "visudo -cf %s", mode: "0600" }
 
 - name: paths | Setup paths for dlbox user
   file: path={{ item.path }} state={{ item.state }} owner={{ dlbox_user }} group={{ dlbox_group }}
   with_items:
-  - { path: "{{ dlbox_prefix}}", state: "directory" }
-  - { path: "{{ dlbox_storage}}", state: "directory" }
+  - { path: "{{ dlbox_prefix }}", state: "directory" }
+  - { path: "{{ dlbox_storage_scripts }}", state: "directory" }
+
+- copy: src={{ item.src }} dest={{ item.dest }} owner=0 group=0 mode=0755
+  with_items:
+  - { src: pmount.wrapper, dest: /usr/bin/pmount.wrapper }
+  - { src: pumount.wrapper, dest: /usr/bin/pumount.wrapper }
 
 - name: udev rules
   copy: src=99-auto-mount-disks.rules dest=/etc/udev/rules.d/99-auto-mount-disks.rules

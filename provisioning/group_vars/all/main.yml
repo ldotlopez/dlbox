@@ -1,0 +1,18 @@
+dlbox_user: dlbox
+dlbox_group: dlbox
+dlbox_password: $6$fvw1gbD3G89Fpx$K2mWVeeSGtxH5i5I41dKCvvWJq/vy7M1GvRsyctwMxF1I4hNLo0e8wBhd1sw/ZAL4xygt5jCQkJsyEWzmDemn/
+dlbox_prefix: /opt/dlbox
+dlbox_storage: "{{ dlbox_prefix }}/storage"
+dlbox_storage_scripts: "{{ dlbox_prefix }}/storage-scripts.d"
+
+# btsync_url: "http://download-lb.utorrent.com/endpoint/btsync/os/linux-glibc23-x64/track/stable"
+btsync_url: "http://download-lb.utorrent.com/endpoint/btsync/os/linux-arm/track/stable"
+btsync_dir: "{{ dlbox_prefix }}/btsync"
+btsync_port: 8888
+btsync_name: "dlbox"
+
+transmission_port: 9091
+transmission_dir: "{{ dlbox_prefix }}/transmission"
+transmission_info_dir: "{{ transmission_dir }}/info"
+transmission_download_dir: "{{ transmission_dir }}/downloads"
+transmission_incomplete_dir: "{{ transmission_dir }}/partial"

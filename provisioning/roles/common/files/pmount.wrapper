@@ -1,0 +1,47 @@
+#!/bin/bash
+
+source "/etc/dlbox.conf" 2>/dev/null
+if [ $? -ne 0 ]; then
+	echo "Unable to read config file" >&2
+	exit 255
+fi
+
+# Start variables
+STORAGE_DIR="$DLBOX_PREFIX/storage"
+STORAGE_GUARD="dlbox-storage.txt"
+SCRIPTS_DIR="$DLBOX_PREFIX/storage-scripts.d"
+# End variables
+
+# Try pmount
+/usr/bin/pmount $@
+E=$?
+if [ $E -ne 0 ]; then
+	exit $E
+fi
+
+# Guess mount pount from DEVNAME envvar
+MP=$(grep "^$DEVNAME " /proc/mounts  | head -1 | awk '{print $2}')
+
+if [ -z "$MP" ]; then
+	echo "Unable to get mountpoint for $DEVNAME" >&2
+	exit 1
+fi
+
+# Check for storage
+if [ ! -f "$MP/$STORAGE_GUARD" ]; then
+	exit 0
+fi
+
+# Setup symlinks
+if [ -e "$STORAGE_DIR" ]; then
+	if [ ! -L "$STORAGE_DIR" ]; then
+		echo "'$STORAGE_DIR' exists and isn't a symlink, aborting" >&2
+		exit 2
+	fi
+	rm "$STORAGE_DIR"
+fi
+ln -s "$MP" "$STORAGE_DIR"
+
+# Finally run scripts
+run-parts -a "plug" "$SCRIPTS_DIR"
+

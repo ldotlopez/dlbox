@@ -1,2 +1,2 @@
-ACTION=="add",KERNEL=="sd*", SUBSYSTEMS=="scsi", RUN+="/usr/bin/pmount --sync --umask 000 %k %E{ID_FS_LABEL}"
-ACTION=="remove", KERNEL=="sd*", RUN+="/usr/bin/pumount -l %k"
+ACTION=="add",KERNEL=="sd*", SUBSYSTEMS=="scsi", RUN+="/usr/bin/pmount.wrapper --sync --umask 000 %k %E{ID_FS_LABEL}"
+ACTION=="remove", KERNEL=="sd*", RUN+="/usr/bin/pumount.wrapper %k"
