@@ -1,7 +1,7 @@
 # minimal,server,base
 preset=minimal
 # comma separated list of extra packages
-packages=openssh-server,python
+packages=openssh-server,python,avahi-daemon
 mirror=http://mirrordirector.raspbian.org/raspbian/
 release=wheezy
 hostname=dlbox
