@@ -1,4 +1,4 @@
-dlbox-ansible
+dlbox
 =============
 
 An excuse to try ansible
